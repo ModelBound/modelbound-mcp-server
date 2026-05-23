@@ -3,6 +3,7 @@ import path from "node:path";
 import { z } from "zod";
 import { ALL_ADAPTERS, detectAdapters, getAdapter, listAdapterFiles } from "../adapters/index.js";
 import { lintSkill, validateAgentSkillsFormat } from "../lib/lint.js";
+import { CloudClient } from "../proxy.js";
 
 const inside = (cwd: string, p: string) => {
   const abs = path.resolve(cwd, p);
@@ -12,7 +13,8 @@ const inside = (cwd: string, p: string) => {
   return abs;
 };
 
-export const localTools = [
+export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
+  return [
   {
     name: "detect_ide_layout",
     description:
@@ -171,4 +173,52 @@ export const localTools = [
       return { from, to, contents: converted };
     },
   },
+
+
+
+  {
+    name: "diff_skill",
+    description:
+      "Diff a local skill file against its cloud counterpart by slug. Local-side diff is computed here; the cloud half requires MODELBOUND_API_KEY.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string", description: "Local skill file path." },
+        slug: { type: "string", description: "Cloud skill slug to compare against." },
+      },
+      required: ["path", "slug"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const { path: p, slug } = z
+        .object({ path: z.string().min(1), slug: z.string().min(1) })
+        .parse(args);
+      const abs = inside(ctx.cwd, p);
+      const local = fs.readFileSync(abs, "utf8");
+      if (!cloud) {
+        return {
+          path: p,
+          slug,
+          local_only: true,
+          local_bytes: Buffer.byteLength(local, "utf8"),
+          note: "MODELBOUND_API_KEY not set; returning local file only.",
+        };
+      }
+      const remote = await cloud.callTool("get_skill", { slug });
+      const remoteBody =
+        typeof remote === "string"
+          ? remote
+          : (remote as any)?.body_md ?? JSON.stringify(remote, null, 2);
+      return {
+        path: p,
+        slug,
+        identical: local.trim() === String(remoteBody).trim(),
+        local_bytes: Buffer.byteLength(local, "utf8"),
+        remote_bytes: Buffer.byteLength(String(remoteBody), "utf8"),
+        local,
+        remote: remoteBody,
+      };
+    },
+  }
 ];
+}
