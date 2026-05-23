@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "modelbound": {
+      "command": "npx",
+      "args": ["-y", "modelbound-mcp"],
+      "env": { "MODELBOUND_API_KEY": "mb_live_..." }
+    }
+  }
+}
