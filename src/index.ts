@@ -11,11 +11,12 @@ import { CloudClient } from "./proxy.js";
 
 const cwd = process.cwd();
 const cloud = CloudClient.fromEnv();
-const tools = [
-  ...localTools,
+type Tool = { name: string; description: string; inputSchema: unknown; handler: (args: any, ctx: { cwd: string }) => Promise<unknown> };
+const tools: Tool[] = [
+  ...localTools(cloud),
   ...cloudTools(cloud).map((t) => ({
     ...t,
-    handler: async (args: unknown) => t.handler(args as any),
+    handler: async (args: any, _ctx: { cwd: string }) => t.handler(args),
   })),
 ];
 
