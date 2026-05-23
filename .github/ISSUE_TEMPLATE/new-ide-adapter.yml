@@ -1,0 +1,24 @@
+name: Add my IDE
+description: Propose support for a new IDE / editor
+labels: ["good first issue", "ide-adapter"]
+body:
+  - type: input
+    id: ide
+    attributes:
+      label: Which IDE / editor?
+      placeholder: "e.g. Zed, Aider, Continue"
+    validations: { required: true }
+  - type: input
+    id: dir
+    attributes:
+      label: Where does it store skill / rule files?
+      placeholder: "e.g. .zed/rules/"
+    validations: { required: true }
+  - type: textarea
+    id: example
+    attributes:
+      label: Example skill file (paste contents)
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything special about its front-matter or file extension?
