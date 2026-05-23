@@ -1,0 +1,6 @@
+[servers.modelbound]
+command = "npx"
+args = ["-y", "modelbound-mcp"]
+
+[servers.modelbound.env]
+MODELBOUND_API_KEY = "mb_live_..."
