@@ -17,7 +17,7 @@
 - `convert_skill` — translate between IDE formats (e.g. Cursor → Claude)
 
 **Cloud (with `MODELBOUND_API_KEY`):**
-- `pull_skill`, `push_skill`, `list_cloud_skills`, `search_cloud`
+- `pull_skill`, `push_skill`, `list_cloud_skills`, `search_cloud`, `diff_skill`
 - `install_marketplace_skill`, `get_context_health`
 
 The cloud tools are a thin JSON-RPC proxy to `mcp.modelbound.co`. All business logic stays server-side; this repo never touches your data or secrets.
