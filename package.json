@@ -1,0 +1,54 @@
+{
+  "name": "modelbound-mcp",
+  "version": "0.1.0",
+  "description": "Local-first MCP server for agent skills. Validate, lint, diff, and convert skills across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
+  "type": "module",
+  "bin": {
+    "modelbound-mcp": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "node --test --import tsx ./src/**/*.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "agent-skills",
+    "cursor",
+    "claude",
+    "kiro",
+    "windsurf",
+    "modelbound"
+  ],
+  "author": "ModelBound",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ModelBound/modelbound-mcp-server.git"
+  },
+  "homepage": "https://modelbound.co/open-source",
+  "bugs": {
+    "url": "https://github.com/ModelBound/modelbound-mcp-server/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "gray-matter": "^4.0.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
+  }
+}
