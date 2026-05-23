@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import type { IdeAdapter, CanonicalSkill } from "./types.js";
+export { listAdapterFiles } from "./types.js";
+export type { IdeAdapter, CanonicalSkill } from "./types.js";
 
 const mdAdapter = (
   id: string,
