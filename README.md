@@ -7,24 +7,26 @@
 
 ## What it does
 
-`modelbound-mcp` is a small [Model Context Protocol](https://modelcontextprotocol.io) server you run locally over stdio. It exposes tools to your IDE / agent:
+`modelbound-mcp` is a small [Model Context Protocol](https://modelcontextprotocol.io) server you run locally over stdio. It exposes tools to your IDE / agent using **dot-notation naming** for navigable discovery (per the [Smithery quality guidelines](https://smithery.ai/docs/quality)):
 
 **Local (no API key, no network):**
-- `detect_ide_layout` — find which IDE conventions your repo uses
-- `list_local_skills`, `read_local_skill`, `write_local_skill`
-- `lint_skill` — front-matter, token count, broken links, TODO scan
-- `validate_skill_format` — agentskills.io compliance
-- `convert_skill` — translate between IDE formats (e.g. Cursor → Claude)
+- `ide.detectLayout` — find which IDE conventions your repo uses
+- `skills.listLocal`, `skills.readLocal`, `skills.writeLocal`
+- `skills.lint` — front-matter, token count, broken links, TODO scan
+- `skills.validateFormat` — agentskills.io compliance
+- `skills.convert` — translate between IDE formats (e.g. Cursor → Claude)
+- `skills.diff` — compare a local skill with its cloud counterpart
 
 **Cloud (with `MODELBOUND_API_KEY`):**
-- `pull_skill`, `push_skill`, `list_cloud_skills`, `search_cloud`, `diff_skill`
-- `install_marketplace_skill`, `get_context_health`
+- `cloud.pullSkill`, `cloud.pushSkill`, `cloud.listSkills`, `cloud.search`
+- `cloud.installMarketplaceSkill`
+- `optimization.health`
 
 The cloud tools are a thin JSON-RPC proxy to `mcp.modelbound.co`. All business logic stays server-side; this repo never touches your data or secrets.
 
-## Install
+> **Migration from 0.1.x** — old snake_case names (`detect_ide_layout`, `pull_skill`, …) were removed in 0.2.0. The hosted ModelBound MCP server still accepts both forms forever for backward compatibility.
 
-No install needed:
+## Install
 
 ```bash
 npx modelbound-mcp
