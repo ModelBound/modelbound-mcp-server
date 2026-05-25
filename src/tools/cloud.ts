@@ -12,7 +12,7 @@ const requireCloud = (client: CloudClient | null): CloudClient => {
 export function cloudTools(client: CloudClient | null) {
   return [
     {
-      name: "pull_skill",
+      name: "cloud.pullSkill",
       description: "Pull a skill from the ModelBound cloud library. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
@@ -20,10 +20,10 @@ export function cloudTools(client: CloudClient | null) {
         required: ["slug"],
       },
       handler: async (args: { slug: string }) =>
-        requireCloud(client).callTool("get_skill", { slug: args.slug }),
+        requireCloud(client).callTool("skills.get", { slug: args.slug }),
     },
     {
-      name: "push_skill",
+      name: "cloud.pushSkill",
       description: "Create or update a skill in the cloud library. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
@@ -35,16 +35,16 @@ export function cloudTools(client: CloudClient | null) {
         required: ["slug", "body_md"],
       },
       handler: async (args: Record<string, unknown>) =>
-        requireCloud(client).callTool("sync_file", args),
+        requireCloud(client).callTool("files.sync", args),
     },
     {
-      name: "list_cloud_skills",
+      name: "cloud.listSkills",
       description: "List skills in the cloud library. Requires MODELBOUND_API_KEY.",
       inputSchema: { type: "object", properties: {} },
-      handler: async () => requireCloud(client).callTool("list_skills", {}),
+      handler: async () => requireCloud(client).callTool("skills.list", {}),
     },
     {
-      name: "search_cloud",
+      name: "cloud.search",
       description: "Full-text search across all cloud content. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
@@ -52,10 +52,10 @@ export function cloudTools(client: CloudClient | null) {
         required: ["q"],
       },
       handler: async (args: { q: string }) =>
-        requireCloud(client).callTool("search_all", { query: args.q }),
+        requireCloud(client).callTool("search.all", { query: args.q }),
     },
     {
-      name: "install_marketplace_skill",
+      name: "cloud.installMarketplaceSkill",
       description: "Install a public marketplace skill into your library. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
@@ -63,13 +63,13 @@ export function cloudTools(client: CloudClient | null) {
         required: ["slug"],
       },
       handler: async (args: { slug: string }) =>
-        requireCloud(client).callTool("install_skill", { slug: args.slug }),
+        requireCloud(client).callTool("skills.install", { slug: args.slug }),
     },
     {
-      name: "get_context_health",
+      name: "optimization.health",
       description: "Get token health scores and staleness for your context library. Requires MODELBOUND_API_KEY.",
       inputSchema: { type: "object", properties: {} },
-      handler: async () => requireCloud(client).callTool("get_context_health", {}),
+      handler: async () => requireCloud(client).callTool("optimization.health", {}),
     },
   ];
 }
