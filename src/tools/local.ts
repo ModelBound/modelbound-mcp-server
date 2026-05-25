@@ -16,7 +16,7 @@ const inside = (cwd: string, p: string) => {
 export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   return [
   {
-    name: "detect_ide_layout",
+    name: "ide.detectLayout",
     description:
       "Detect which IDE skill/rule layouts exist in the current working directory. Returns the list of matching adapters (e.g. cursor, claude, kiro). Local-only, no network.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -36,7 +36,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "list_local_skills",
+    name: "skills.listLocal",
     description: "List all skill / rule files found in the detected IDE directories under the current working directory.",
     inputSchema: {
       type: "object",
@@ -62,7 +62,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "read_local_skill",
+    name: "skills.readLocal",
     description: "Read a local skill file (raw contents). Path must be inside the current working directory.",
     inputSchema: {
       type: "object",
@@ -78,7 +78,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "write_local_skill",
+    name: "skills.writeLocal",
     description: "Write a local skill file. Creates parent directories. Path must be inside the current working directory.",
     inputSchema: {
       type: "object",
@@ -98,7 +98,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "lint_skill",
+    name: "skills.lint",
     description: "Lint a skill file: front-matter, token count, broken links, TODO markers. Local-only.",
     inputSchema: {
       type: "object",
@@ -117,7 +117,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "validate_skill_format",
+    name: "skills.validateFormat",
     description: "Validate a skill file against the agentskills.io standard.",
     inputSchema: {
       type: "object",
@@ -133,7 +133,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "convert_skill",
+    name: "skills.convert",
     description:
       "Convert a skill file from one IDE format to another (e.g. cursor → claude). Round-trips through a canonical {frontmatter, body} representation.",
     inputSchema: {
@@ -177,7 +177,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
 
 
   {
-    name: "diff_skill",
+    name: "skills.diff",
     description:
       "Diff a local skill file against its cloud counterpart by slug. Local-side diff is computed here; the cloud half requires MODELBOUND_API_KEY.",
     inputSchema: {
