@@ -5,6 +5,10 @@
 [![npm](https://img.shields.io/npm/v/modelbound-mcp.svg)](https://www.npmjs.com/package/modelbound-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+## Why ModelBound?
+
+AI tools come and go. You might use Cursor today, switch to Claude Code tomorrow, and try Kiro next week — but your skills, rules, and context shouldn't be locked into any one of them. ModelBound gives you a single place to store and manage your agent skills, so you can move between tools freely without rebuilding your setup each time. Write a skill once, sync it everywhere, and get more value out of every AI subscription you're already paying for.
+
 ## What it does
 
 `modelbound-mcp` is a small [Model Context Protocol](https://modelcontextprotocol.io) server you run locally over stdio. It exposes tools to your IDE / agent using **dot-notation naming** for navigable discovery (per the [Smithery quality guidelines](https://smithery.ai/docs/quality)):

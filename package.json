@@ -1,6 +1,6 @@
 {
   "name": "modelbound-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Local-first MCP server for agent skills. Validate, lint, diff, and convert skills across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
   "type": "module",
   "bin": {
