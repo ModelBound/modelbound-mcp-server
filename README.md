@@ -22,9 +22,15 @@ AI tools come and go. You might use Cursor today, switch to Claude Code tomorrow
 - `skills.diff` — compare a local skill with its cloud counterpart
 
 **Cloud (with `MODELBOUND_API_KEY`):**
-- `cloud.pullSkill`, `cloud.pushSkill`, `cloud.listSkills`, `cloud.search`
+- `cloud.pullSkill`, `cloud.pushSkill`, `cloud.search`
+- `cloud.listSkills` — now accepts `ai_type` and `source_platform` filters; every row includes `ai_type`, `source_platform`, `source_path`, and `repo`
+- `cloud.resourceTree` — returns the team's full hierarchy grouped by platform → top-level dir (`.claude/skills`, `.cursor/rules`, `.kiro/steering`, …) → files. Use this before `cloud.listSkills` when an orchestrator needs to map context before loading.
 - `cloud.installMarketplaceSkill`
 - `optimization.health`
+
+### Resource hierarchy
+
+Orchestrators that juggle multiple AI platforms can call `cloud.resourceTree` once to get a complete map of available skills, rules, hooks, steering files, and system prompts — grouped exactly how each platform expects them on disk. Pair it with the new `ai_type` / `source_platform` filters on `cloud.listSkills` to load only the slice you need. See [`examples/resource-tree.ts`](./examples/resource-tree.ts).
 
 The cloud tools are a thin JSON-RPC proxy to `mcp.modelbound.co`. All business logic stays server-side; this repo never touches your data or secrets.
 
