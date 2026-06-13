@@ -1,7 +1,7 @@
 {
   "name": "modelbound-mcp",
   "version": "0.4.0",
-  "description": "Local-first MCP server for agent skills. Validate, lint, diff, optimize tokens, run the Skill Development Pipeline, test, benchmark, version, and restore skills across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
+  "description": "Local-first MCP server for agent skills. Validate, lint, diff, convert, optimize tokens, and run the Skill Development Pipeline across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
   "type": "module",
   "bin": {
     "modelbound-mcp": "./dist/cli.js"
@@ -28,7 +28,9 @@
     "claude",
     "kiro",
     "windsurf",
-    "modelbound"
+    "modelbound",
+    "token-optimization",
+    "skill-pipeline"
   ],
   "author": "ModelBound",
   "license": "MIT",

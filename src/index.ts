@@ -8,19 +8,32 @@ import {
 import { localTools } from "./tools/local.js";
 import { cloudTools } from "./tools/cloud.js";
 import { optimizationTools } from "./tools/optimization.js";
+import { pipelineTools } from "./tools/pipeline.js";
+import { skillOpsTools } from "./tools/skill-ops.js";
 import { CloudClient } from "./proxy.js";
 
 const cwd = process.cwd();
 const cloud = CloudClient.fromEnv();
-type Tool = { name: string; description: string; inputSchema: unknown; handler: (args: any, ctx: { cwd: string }) => Promise<unknown> };
+type Tool = {
+  name: string;
+  description: string;
+  inputSchema: unknown;
+  handler: (args: any, ctx: { cwd: string }) => Promise<unknown>;
+};
+
+// Cloud-backed tool groups all share the same single-arg handler shape; wrap
+// them so the registry can pass ctx uniformly without each group caring.
 const wrapCloud = <T extends { handler: (args: any) => Promise<unknown> }>(t: T) => ({
   ...t,
   handler: async (args: any, _ctx: { cwd: string }) => t.handler(args),
 });
+
 const tools: Tool[] = [
   ...localTools(cloud),
   ...cloudTools(cloud).map(wrapCloud),
   ...optimizationTools(cloud).map(wrapCloud),
+  ...pipelineTools(cloud).map(wrapCloud),
+  ...skillOpsTools(cloud).map(wrapCloud),
 ];
 
 const server = new Server(
