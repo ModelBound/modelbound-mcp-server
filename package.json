@@ -22,6 +22,8 @@
     "mcp",
     "model-context-protocol",
     "agent-skills",
+    "token-optimization",
+    "skill-pipeline",
     "cursor",
     "claude",
     "kiro",
