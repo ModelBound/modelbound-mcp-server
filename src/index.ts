@@ -7,21 +7,24 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { localTools } from "./tools/local.js";
 import { cloudTools } from "./tools/cloud.js";
+import { optimizationTools } from "./tools/optimization.js";
 import { CloudClient } from "./proxy.js";
 
 const cwd = process.cwd();
 const cloud = CloudClient.fromEnv();
 type Tool = { name: string; description: string; inputSchema: unknown; handler: (args: any, ctx: { cwd: string }) => Promise<unknown> };
+const wrapCloud = <T extends { handler: (args: any) => Promise<unknown> }>(t: T) => ({
+  ...t,
+  handler: async (args: any, _ctx: { cwd: string }) => t.handler(args),
+});
 const tools: Tool[] = [
   ...localTools(cloud),
-  ...cloudTools(cloud).map((t) => ({
-    ...t,
-    handler: async (args: any, _ctx: { cwd: string }) => t.handler(args),
-  })),
+  ...cloudTools(cloud).map(wrapCloud),
+  ...optimizationTools(cloud).map(wrapCloud),
 ];
 
 const server = new Server(
-  { name: "modelbound-mcp", version: "0.1.0" },
+  { name: "modelbound-mcp", version: "0.4.0" },
   { capabilities: { tools: {} } },
 );
 
