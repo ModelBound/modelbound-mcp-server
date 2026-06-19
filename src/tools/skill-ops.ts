@@ -86,8 +86,90 @@ export function skillOpsTools(client: CloudClient | null) {
         required: ["skill_id", "from_version"],
       },
       handler: async (args: Record<string, unknown>) =>
-        // Hosted server compares versions and returns a unified diff payload.
         requireCloud(client).callTool("get_file_variants", { ...args, mode: "diff" }),
+    },
+    {
+      name: "skill.findings",
+      description:
+        "List Trust & Safety findings and scores for a skill. Returns scores, findings with stable keys, and ignored_keys. Requires MODELBOUND_API_KEY.",
+      inputSchema: {
+        type: "object",
+        properties: { skill_id: { type: "string" } },
+        required: ["skill_id"],
+      },
+      handler: async (args: { skill_id: string }) =>
+        requireCloud(client).callTool("list_skill_findings", args),
+    },
+    {
+      name: "skill.ignoreFinding",
+      description: "Ignore a trust finding by stable key (or class/severity/message). Requires MODELBOUND_API_KEY.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          skill_id: { type: "string" },
+          finding_key: { type: "string" },
+          class: { type: "string" },
+          severity: { type: "string" },
+          message: { type: "string" },
+        },
+        required: ["skill_id"],
+      },
+      handler: async (args: Record<string, unknown>) =>
+        requireCloud(client).callTool("ignore_skill_finding", args),
+    },
+    {
+      name: "skill.unignoreFinding",
+      description: "Un-ignore a previously ignored trust finding. Requires MODELBOUND_API_KEY.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          skill_id: { type: "string" },
+          finding_key: { type: "string" },
+          class: { type: "string" },
+          severity: { type: "string" },
+          message: { type: "string" },
+        },
+        required: ["skill_id"],
+      },
+      handler: async (args: Record<string, unknown>) =>
+        requireCloud(client).callTool("unignore_skill_finding", args),
+    },
+    {
+      name: "skill.benchmark",
+      description: "Run benchmark latency suite for a skill. Requires MODELBOUND_API_KEY.",
+      inputSchema: {
+        type: "object",
+        properties: { skill_id: { type: "string" } },
+        required: ["skill_id"],
+      },
+      handler: async (args: { skill_id: string }) =>
+        requireCloud(client).callTool("benchmark_skill", args),
+    },
+    {
+      name: "skill.compareVersions",
+      description: "Compare two skill versions (e.g. latest vs current). Requires MODELBOUND_API_KEY.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          skill_id: { type: "string" },
+          from_version: { type: "string" },
+          to_version: { type: "string" },
+        },
+        required: ["skill_id"],
+      },
+      handler: async (args: Record<string, unknown>) =>
+        requireCloud(client).callTool("compare_skill_versions", args),
+    },
+    {
+      name: "skill.suggestImprovements",
+      description: "Suggest skill improvements from trust & quality analysis. Requires MODELBOUND_API_KEY.",
+      inputSchema: {
+        type: "object",
+        properties: { skill_id: { type: "string" } },
+        required: ["skill_id"],
+      },
+      handler: async (args: { skill_id: string }) =>
+        requireCloud(client).callTool("suggest_skill_improvements", args),
     },
   ];
 }
