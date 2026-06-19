@@ -35,6 +35,12 @@ export function pipelineTools(client: CloudClient | null) {
             description: "e.g. ['marketplace', 'claude']. Production stage publishes to each target after gates pass.",
           },
           version_bump: { type: "string", enum: ["patch", "minor", "major", "none"], default: "patch" },
+          stage: {
+            type: "string",
+            enum: ["full", "test_optimize", "production"],
+            default: "full",
+            description: "Pipeline stage to run.",
+          },
           override_gates: {
             type: "boolean",
             default: false,
@@ -55,13 +61,16 @@ export function pipelineTools(client: CloudClient | null) {
     {
       name: "pipeline.status",
       description:
-        "Get current stage_results for a pipeline run id. Poll every 1-2s while status === 'running'. Returns the full stage_results JSON so the caller can render per-stage spinners and surface trust/test/latency details.",
+        "Get pipeline run status. Pass run_id for a specific run, or skill_id + limit for recent runs. Poll every 1-2s while status === 'running'.",
       inputSchema: {
         type: "object",
-        properties: { run_id: { type: "string" } },
-        required: ["run_id"],
+        properties: {
+          run_id: { type: "string" },
+          skill_id: { type: "string" },
+          limit: { type: "number", default: 1 },
+        },
       },
-      handler: async (args: { run_id: string }) =>
+      handler: async (args: Record<string, unknown>) =>
         requireCloud(client).callTool("get_skill_pipeline_status", args),
     },
     {
