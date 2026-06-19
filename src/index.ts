@@ -11,6 +11,7 @@ import { optimizationTools } from "./tools/optimization.js";
 import { pipelineTools } from "./tools/pipeline.js";
 import { skillOpsTools } from "./tools/skill-ops.js";
 import { workspaceTools } from "./tools/workspace.js";
+import { evalTools } from "./tools/eval.js";
 import { CloudClient } from "./proxy.js";
 
 const cwd = process.cwd();
@@ -36,6 +37,7 @@ const tools: Tool[] = [
   ...workspaceTools(cloud).map(wrapCloud),
   ...pipelineTools(cloud).map(wrapCloud),
   ...skillOpsTools(cloud).map(wrapCloud),
+  ...evalTools(cloud).map(wrapCloud),
 ];
 
 const server = new Server(
