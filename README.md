@@ -88,6 +88,18 @@ We want help. Specifically:
 
 Browse [good first issues](https://github.com/ModelBound/modelbound-mcp-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and the [roadmap](ROADMAP.md).
 
+## Related projects
+
+| Project | Description |
+| --- | --- |
+| [ModelBound CLI](https://github.com/ModelBound/modelbound-cli) · [npm](https://www.npmjs.com/package/modelbound) | Terminal + CI for token optimization, skill pipeline, and version management |
+| [Cursor Extension](https://github.com/ModelBound/modelbound-cursor-extension) · [Marketplace](https://marketplace.visualstudio.com/items?itemName=ModelBound.modelbound-cursor-extension) | VS Code/Cursor extension for rules sync and MCP bridge |
+| [Cursor Plugin](https://github.com/ModelBound/cursor-plugin) | Cursor slash commands for pipeline, trust & safety, and versions |
+| [Claude Code Plugin](https://github.com/ModelBound/modelbound-claude-code-plugin) | Claude Code plugin for pipeline, hooks, and skill sync |
+| [Dev Packs](https://github.com/ModelBound/dev-packs) | Open-source curated AI context packs for engineering teams |
+
+Also on [Smithery](https://smithery.ai) (stdio via `npx modelbound-mcp`) and the [MCP Registry](https://github.com/ModelBound/modelbound-mcp-server/blob/main/server.json). Install hub: [modelbound.co/connect](https://modelbound.co/connect)
+
 ## License
 
 MIT © ModelBound

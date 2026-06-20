@@ -1,0 +1,18 @@
+# Smithery configuration — https://smithery.ai/docs/build/publish
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      apiKey:
+        type: string
+        title: ModelBound API Key
+        description: Optional. Enables cloud sync tools (pull/push/search). Get one at https://modelbound.co/settings/api-keys
+    required: []
+  commandFunction: |-
+    (config) => ({
+      command: "npx",
+      args: ["-y", "modelbound-mcp@latest"],
+      env: config.apiKey ? { MODELBOUND_API_KEY: config.apiKey } : {}
+    })
+  exampleConfig: {}
