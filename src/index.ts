@@ -41,7 +41,7 @@ const tools: Tool[] = [
 ];
 
 const server = new Server(
-  { name: "modelbound-mcp", version: "0.4.0" },
+  { name: "modelbound-mcp", version: "0.4.2" },
   { capabilities: { tools: {} } },
 );
 

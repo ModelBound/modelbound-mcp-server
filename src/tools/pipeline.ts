@@ -55,8 +55,13 @@ export function pipelineTools(client: CloudClient | null) {
         },
         required: ["skill_id"],
       },
-      handler: async (args: Record<string, unknown>) =>
-        requireCloud(client).callTool("run_skill_pipeline", args),
+      handler: async (args: Record<string, unknown>) => {
+        const { override_gates, apply_optimization: _apply, ...rest } = args;
+        return requireCloud(client).callTool("run_skill_pipeline", {
+          ...rest,
+          ...(override_gates !== undefined ? { override_gate: override_gates } : {}),
+        });
+      },
     },
     {
       name: "pipeline.status",

@@ -204,7 +204,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
           note: "MODELBOUND_API_KEY not set; returning local file only.",
         };
       }
-      const remote = await cloud.callTool("get_skill", { slug });
+      const remote = await cloud.callTool("get_skill", { skill_id: slug });
       const remoteBody =
         typeof remote === "string"
           ? remote

@@ -8,6 +8,34 @@ const MCP_URL = "https://mcp.modelbound.co/mcp?source=oss-mcp";
 
 let nextId = 1;
 
+type ToolCallResult = {
+  content?: { type: string; text?: string }[];
+  isError?: boolean;
+};
+
+/** Unwrap MCP tools/call results into plain JSON/string payloads. */
+function unwrapToolResult(result: unknown): unknown {
+  if (!result || typeof result !== "object" || !("content" in result)) return result;
+  const r = result as ToolCallResult;
+  if (!Array.isArray(r.content)) return result;
+  if (r.isError) {
+    const msg = r.content.map((c) => c.text ?? "").filter(Boolean).join("\n");
+    throw new Error(msg || "ModelBound tool error");
+  }
+  const texts = r.content
+    .filter((c) => c.type === "text" && c.text)
+    .map((c) => c.text as string);
+  if (texts.length === 0) return result;
+  if (texts.length === 1) {
+    try {
+      return JSON.parse(texts[0]!);
+    } catch {
+      return texts[0];
+    }
+  }
+  return texts.join("\n");
+}
+
 export class CloudClient {
   constructor(private apiKey: string) {}
 
@@ -53,6 +81,6 @@ export class CloudClient {
   }
 
   async callTool(name: string, args: Record<string, unknown>): Promise<unknown> {
-    return this.call("tools/call", { name, arguments: args });
+    return unwrapToolResult(await this.call("tools/call", { name, arguments: args }));
   }
 }

@@ -50,8 +50,11 @@ export function optimizationTools(client: CloudClient | null) {
       },
       handler: async (args: OptimizeArgs) =>
         requireCloud(client).callTool("optimize_tokens", {
-          ...args,
-          mode: "manual",
+          skill_id: args.skill_id,
+          file_id: args.file_id,
+          pack_id: args.pack_id,
+          intensity: args.intensity,
+          dry_run: args.dry_run ?? false,
         }),
     },
     {
@@ -70,8 +73,10 @@ export function optimizationTools(client: CloudClient | null) {
       },
       handler: async (args: OptimizeArgs) =>
         requireCloud(client).callTool("optimize_tokens", {
-          ...args,
-          mode: "auto",
+          skill_id: args.skill_id,
+          file_id: args.file_id,
+          pack_id: args.pack_id,
+          intensity: args.intensity,
           dry_run: true,
         }),
     },

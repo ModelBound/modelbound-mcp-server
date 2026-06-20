@@ -1,6 +1,6 @@
 {
   "name": "modelbound-mcp",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Local-first MCP server for agent skills. Validate, lint, diff, convert, optimize tokens, and run the Skill Development Pipeline across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
   "type": "module",
   "bin": {
@@ -16,6 +16,7 @@
     "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/index.js",
     "dev": "tsx src/index.ts",
     "test": "node --test --import tsx ./src/**/*.test.ts",
+    "smoke": "npm run build && node scripts/smoke-test.mjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

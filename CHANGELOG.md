@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.2 — Cloud proxy fixes + smoke tests
+
+Fixes hosted MCP tool name/argument mismatches and unwraps MCP `tools/call` responses so cloud tools return parsed JSON instead of raw `{ content: [...] }` envelopes.
+
+### Fixed cloud proxy mappings
+- `cloud.pushSkill` → `sync_skill_from_ide` (was broken `files.sync`)
+- `cloud.installMarketplaceSkill` → `get_published_skill` + `create_skill` (was missing `skills.install`)
+- `cloud.search` → `search_all`
+- `optimization.health` → `get_context_health`
+- `skills.diff` / `skill.diff` / `pipeline.run` argument fixes
+
+### Added
+- `scripts/smoke-test.mjs` and `npm run smoke` — exercises all local tools, CLI commands, and cloud proxy tools against the live API.
+
 ## 0.4.0 — Optimize + Pipeline everywhere
 
 Adds first-class MCP tools so AI engineers can run **token optimization** and the **Skill Development Pipeline** without opening the ModelBound UI.

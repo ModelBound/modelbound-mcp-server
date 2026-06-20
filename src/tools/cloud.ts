@@ -20,7 +20,7 @@ export function cloudTools(client: CloudClient | null) {
         required: ["slug"],
       },
       handler: async (args: { slug: string }) =>
-        requireCloud(client).callTool("get_skill", { skill_id: args.slug, file_id: args.slug }),
+        requireCloud(client).callTool("get_skill", { skill_id: args.slug }),
     },
     {
       name: "cloud.pushSkill",
@@ -34,8 +34,16 @@ export function cloudTools(client: CloudClient | null) {
         },
         required: ["slug", "body_md"],
       },
-      handler: async (args: Record<string, unknown>) =>
-        requireCloud(client).callTool("files.sync", args),
+      handler: async (args: { slug: string; title?: string; body_md: string }) => {
+        const cloud = requireCloud(client);
+        const sourcePath = args.slug.includes("/") ? args.slug : `.modelbound/${args.slug}.md`;
+        return cloud.callTool("sync_skill_from_ide", {
+          source_ide: "modelbound",
+          source_path: sourcePath,
+          name: args.title ?? args.slug,
+          body_md: args.body_md,
+        });
+      },
     },
     {
       name: "cloud.listSkills",
@@ -79,7 +87,8 @@ export function cloudTools(client: CloudClient | null) {
       },
       handler: async (args: { platform?: string; repo?: string }) =>
         requireCloud(client).callTool("get_resource_tree", {
-          ...(args.platform ? { platform: args.platform } : {}),
+          // Hosted API accepts `platform`; also send source_platform for forward-compat.
+          ...(args.platform ? { platform: args.platform, source_platform: args.platform } : {}),
           ...(args.repo ? { repo: args.repo } : {}),
         }),
     },
@@ -92,7 +101,7 @@ export function cloudTools(client: CloudClient | null) {
         required: ["q"],
       },
       handler: async (args: { q: string }) =>
-        requireCloud(client).callTool("search.all", { query: args.q }),
+        requireCloud(client).callTool("search_all", { query: args.q }),
     },
     {
       name: "cloud.installMarketplaceSkill",
@@ -102,14 +111,27 @@ export function cloudTools(client: CloudClient | null) {
         properties: { slug: { type: "string" } },
         required: ["slug"],
       },
-      handler: async (args: { slug: string }) =>
-        requireCloud(client).callTool("skills.install", { slug: args.slug }),
+      handler: async (args: { slug: string }) => {
+        const cloud = requireCloud(client);
+        const published = (await cloud.callTool("get_published_skill", { slug: args.slug })) as {
+          skill?: { name: string; description: string; body_md: string };
+        };
+        const skill = published?.skill;
+        if (!skill?.body_md) {
+          throw new Error(`Published skill not found: ${args.slug}`);
+        }
+        return cloud.callTool("create_skill", {
+          name: skill.name,
+          description: skill.description,
+          body_md: skill.body_md,
+        });
+      },
     },
     {
       name: "optimization.health",
       description: "Get token health scores and staleness for your context library. Requires MODELBOUND_API_KEY.",
       inputSchema: { type: "object", properties: {} },
-      handler: async () => requireCloud(client).callTool("optimization.health", {}),
+      handler: async () => requireCloud(client).callTool("get_context_health", {}),
     },
   ];
 }

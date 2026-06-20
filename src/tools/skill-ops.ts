@@ -86,7 +86,12 @@ export function skillOpsTools(client: CloudClient | null) {
         required: ["skill_id", "from_version"],
       },
       handler: async (args: Record<string, unknown>) =>
-        requireCloud(client).callTool("get_file_variants", { ...args, mode: "diff" }),
+        requireCloud(client).callTool("compare_skill_versions", {
+          skill_id: args.skill_id,
+          from_version: args.from_version,
+          to_version: args.to_version,
+          ...(args.against_body ? { current_skill_md: args.against_body } : {}),
+        }),
     },
     {
       name: "skill.findings",
