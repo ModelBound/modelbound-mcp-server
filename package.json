@@ -22,16 +22,20 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
+    "modelbound",
     "agent-skills",
+    "context-engineering",
+    "prompt-engineering",
     "token-optimization",
     "skill-pipeline",
     "cursor",
     "claude",
     "kiro",
     "windsurf",
-    "modelbound",
-    "token-optimization",
-    "skill-pipeline"
+    "vscode",
+    "ai-agents",
+    "generative-ai",
+    "llm"
   ],
   "author": "ModelBound",
   "license": "MIT",

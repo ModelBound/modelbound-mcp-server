@@ -1,0 +1,25 @@
+{
+  "description": "Local-first MCP server for agent skills — validate, lint, convert, optimize tokens, and sync across Cursor, Claude, Kiro, Windsurf, and VS Code.",
+  "homepage": "https://www.npmjs.com/package/modelbound-mcp",
+  "topics": [
+    "ai",
+    "ai-agents",
+    "ai-tools",
+    "agent-skills",
+    "context-engineering",
+    "prompt-engineering",
+    "prompts",
+    "llm",
+    "generative-ai",
+    "artificial-intelligence",
+    "mcp",
+    "model-context-protocol",
+    "cursor",
+    "windsurf",
+    "claude",
+    "agentic-ai",
+    "agentic-workflow",
+    "open-source",
+    "nodejs"
+  ]
+}
