@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ModelBound/modelbound-mcp",
+  "description": "Local-first MCP server for agent skills. Validate, lint, diff, and convert across IDEs.",
+  "repository": {
+    "url": "https://github.com/ModelBound/modelbound-mcp-server",
+    "source": "github"
+  },
+  "version": "0.1.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "modelbound-mcp",
+      "version": "0.1.2",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "ModelBound API key for optional cloud sync features. Get one at https://modelbound.co/settings/api-keys",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "MODELBOUND_API_KEY"
+        }
+      ]
+    }
+  ]
+}

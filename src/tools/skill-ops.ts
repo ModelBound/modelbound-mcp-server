@@ -157,8 +157,17 @@ export function skillOpsTools(client: CloudClient | null) {
         },
         required: ["skill_id"],
       },
-      handler: async (args: Record<string, unknown>) =>
-        requireCloud(client).callTool("compare_skill_versions", args),
+      handler: async (args: Record<string, unknown>) => {
+        const from = (args.from_version ?? args.version_a) as string | undefined;
+        const to = (args.to_version ?? args.version_b) as string | undefined;
+        return requireCloud(client).callTool("compare_skill_versions", {
+          skill_id: args.skill_id,
+          from_version: from,
+          to_version: to,
+          version_a: from,
+          version_b: to,
+        });
+      },
     },
     {
       name: "skill.suggestImprovements",

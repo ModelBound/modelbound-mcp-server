@@ -27,10 +27,27 @@ export class CloudClient {
       },
       body: JSON.stringify({ jsonrpc: "2.0", id: nextId++, method, params }),
     });
-    if (!res.ok) {
-      throw new Error(`ModelBound cloud returned ${res.status}: ${await res.text()}`);
+    const contentType = res.headers.get("content-type") ?? "";
+    let raw = await res.text();
+    if (contentType.includes("text/event-stream")) {
+      const dataLines = raw
+        .split("\n")
+        .filter((l) => l.startsWith("data:"))
+        .map((l) => l.slice(5).trim())
+        .filter(Boolean);
+      raw = dataLines[dataLines.length - 1] ?? "";
     }
-    const body = (await res.json()) as { result?: unknown; error?: { message: string } };
+    if (!res.ok) {
+      throw new Error(`ModelBound cloud returned ${res.status}: ${raw}`);
+    }
+    let body: { result?: unknown; error?: { message: string } } = {};
+    if (raw) {
+      try {
+        body = JSON.parse(raw) as typeof body;
+      } catch {
+        throw new Error(raw || "Empty MCP response");
+      }
+    }
     if (body.error) throw new Error(body.error.message);
     return body.result;
   }

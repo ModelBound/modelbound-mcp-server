@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "MODELBOUND_API_KEY": {
+      "type": "string",
+      "description": "ModelBound API key for cloud sync features. Get one at https://modelbound.co/settings/api-keys"
+    }
+  },
+  "required": ["MODELBOUND_API_KEY"]
+}
