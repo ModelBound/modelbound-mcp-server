@@ -43,6 +43,24 @@ export function skillOpsTools(client: CloudClient | null) {
         requireCloud(client).callTool("list_skill_test_cases", args),
     },
     {
+      name: "skill.createTestCase",
+      description:
+        "Create a saved automated check test case for a skill. Requires skill_id, name, and prompt. Optional notes for grading.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          skill_id: { type: "string" },
+          name: { type: "string" },
+          prompt: { type: "string" },
+          notes: { type: "string" },
+          cross_repo: { type: "boolean" },
+        },
+        required: ["skill_id", "name", "prompt"],
+      },
+      handler: async (args: Record<string, unknown>) =>
+        requireCloud(client).callTool("create_skill_test_case", args),
+    },
+    {
       name: "skill.testRuns",
       description: "List recent test runs for a skill (latest first).",
       inputSchema: {
