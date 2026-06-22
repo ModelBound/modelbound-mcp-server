@@ -88,7 +88,7 @@ function die(msg: string): never {
 function walk(dir: string): string[] {
   const out: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith(".") && entry.name !== ".cursor" && entry.name !== ".claude" && entry.name !== ".kiro" && entry.name !== ".windsurf") continue;
+    if (entry.name.startsWith(".") && entry.name !== ".cursor" && entry.name !== ".claude" && entry.name !== ".codex" && entry.name !== ".kiro" && entry.name !== ".windsurf") continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...walk(full));
     else if (entry.isFile()) out.push(full);

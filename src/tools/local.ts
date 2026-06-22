@@ -18,7 +18,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   {
     name: "ide.detectLayout",
     description:
-      "Detect which IDE skill/rule layouts exist in the current working directory. Returns the list of matching adapters (e.g. cursor, claude, kiro). Local-only, no network.",
+      "Detect which IDE skill/rule layouts exist in the current working directory. Returns the list of matching adapters (e.g. cursor, claude, codex, kiro). Local-only, no network.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     handler: async (_args: unknown, ctx: { cwd: string }) => {
       const adapters = detectAdapters(ctx.cwd);

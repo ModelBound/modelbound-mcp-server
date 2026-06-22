@@ -1,6 +1,6 @@
 # modelbound-mcp
 
-> Local-first MCP server for agent skills. Validate, lint, diff, and convert agent skill files across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q — no account required. Optional cloud sync with [ModelBound](https://modelbound.co).
+> Local-first MCP server for agent skills. Validate, lint, diff, and convert agent skill files across Cursor, Claude, Codex, Kiro, Windsurf, VS Code, and Amazon Q — no account required. Optional cloud sync with [ModelBound](https://modelbound.co).
 
 [![npm](https://img.shields.io/npm/v/modelbound-mcp.svg)](https://www.npmjs.com/package/modelbound-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -11,7 +11,7 @@ AI tools come and go. You might use Cursor today, switch to Claude Code tomorrow
 
 ## What it does
 
-`modelbound-mcp` is a small [Model Context Protocol](https://modelcontextprotocol.io) server you run locally over stdio. It exposes tools to your IDE / agent using **dot-notation naming** for navigable discovery (per the [Smithery quality guidelines](https://smithery.ai/docs/quality)):
+`modelbound-mcp` is a small [Model Context Protocol](https://modelcontextprotocol.io) server you run locally over stdio. It exposes tools to your IDE / agent using **dot-notation naming** for navigable discovery:
 
 **Local (no API key, no network):**
 - `ide.detectLayout` — find which IDE conventions your repo uses
@@ -74,6 +74,7 @@ See [`examples/`](./examples) for Claude Desktop, Kiro, Windsurf, and VS Code co
 modelbound-mcp detect                                  # which IDE layouts exist here?
 modelbound-mcp ls                                      # list every skill file
 modelbound-mcp lint .cursor/rules/                     # lint a directory
+modelbound-mcp lint .codex/skills/                     # lint Codex skills
 modelbound-mcp validate ./SKILL.md                     # agentskills.io compliance
 modelbound-mcp convert --from cursor --to claude ./rule.mdc > out.md
 ```
