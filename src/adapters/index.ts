@@ -43,6 +43,14 @@ export const claude: IdeAdapter = mdAdapter(
   (cwd) => fs.existsSync(path.join(cwd, ".claude")),
 );
 
+export const codex: IdeAdapter = mdAdapter(
+  "codex",
+  "Codex",
+  ".codex/skills",
+  "SKILL.md",
+  (cwd) => fs.existsSync(path.join(cwd, ".codex/skills")),
+);
+
 export const kiro: IdeAdapter = mdAdapter(
   "kiro",
   "Kiro",
@@ -86,6 +94,7 @@ export const agentsMd: IdeAdapter = mdAdapter(
 export const ALL_ADAPTERS: IdeAdapter[] = [
   cursor,
   claude,
+  codex,
   kiro,
   windsurf,
   vscode,
