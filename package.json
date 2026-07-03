@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/index.js",
     "dev": "tsx src/index.ts",
-    "test": "node --test --import tsx 'src/**/*.test.ts'",
+    "test": "find src -name '*.test.ts' -print0 | xargs -0 -r node --test --import tsx",
     "smoke": "npm run build && node scripts/smoke-test.mjs",
     "prepublishOnly": "npm run build"
   },
