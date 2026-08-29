@@ -123,6 +123,14 @@ async function testLocalTools(fixtureDir, tools, ctx, toolsNoCloud) {
     ],
     ["skills.readLocal", () => runTool(tools, "skills.readLocal", { path: relPath }, ctx)],
     ["skills.lint", () => runTool(tools, "skills.lint", { path: relPath }, ctx)],
+    ["skills.trust", () => runTool(tools, "skills.trust", { path: relPath }, ctx)],
+    ["skills.scaffold", () =>
+      runTool(tools, "skills.scaffold", {
+        name: "scaffold-smoke",
+        description: "Triggered when smoke tests run scaffold; verifies default scope injection.",
+      }, ctx)],
+    ["skills.reviewStatus", () => runTool(tools, "skills.reviewStatus", { path: relPath }, ctx)],
+    ["skills.reviewRequest", () => runTool(tools, "skills.reviewRequest", { path: relPath }, ctx)],
     ["skills.validateFormat", () => runTool(tools, "skills.validateFormat", { path: relPath }, ctx)],
     [
       "skills.convert",
@@ -142,6 +150,16 @@ async function testLocalTools(fixtureDir, tools, ctx, toolsNoCloud) {
       const result = await fn();
       if (name === "skills.diff (no api key)" && !result.local_only) {
         throw new Error("expected local_only without API key");
+      }
+      if (name === "skills.readLocal") {
+        if (result.trust_score == null || result.scanner_version !== "h5") {
+          throw new Error("skills.readLocal missing served payload fields");
+        }
+      }
+      if (name === "skills.trust") {
+        if (result.scanner_version !== "h5" || typeof result.trust_score !== "number") {
+          throw new Error("skills.trust missing h5 score");
+        }
       }
       ok(name);
     } catch (e) {
