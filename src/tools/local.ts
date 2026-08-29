@@ -4,6 +4,11 @@ import { z } from "zod";
 import { ALL_ADAPTERS, detectAdapters, getAdapter, listAdapterFiles } from "../adapters/index.js";
 import { lintSkill, validateAgentSkillsFormat } from "../lib/lint.js";
 import { CloudClient } from "../proxy.js";
+import { buildServedSkillPayload, parseSkillForTrust } from "../lib/skillPayload.js";
+import { applyReviewToFile, ciBlocksMerge, hashBody, readSkillParts } from "../lib/skillReview.js";
+import { appendRun, readRuns, summarizeConfidence } from "../lib/confidenceHistory.js";
+import { SCANNER_VERSION } from "../lib/skillTrust.js";
+import { writeScaffoldedSkill } from "../lib/skillScaffold.js";
 
 const inside = (cwd: string, p: string) => {
   const abs = path.resolve(cwd, p);
@@ -73,7 +78,8 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
     handler: async (args: unknown, ctx: { cwd: string }) => {
       const { path: p } = z.object({ path: z.string().min(1) }).parse(args);
       const abs = inside(ctx.cwd, p);
-      return { path: p, contents: fs.readFileSync(abs, "utf8") };
+      const raw = fs.readFileSync(abs, "utf8");
+      return buildServedSkillPayload(ctx.cwd, p, raw);
     },
   },
 
@@ -112,7 +118,16 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
         .parse(args);
       const abs = inside(ctx.cwd, p);
       const raw = fs.readFileSync(abs, "utf8");
-      return { path: p, ...lintSkill(raw, { maxTokens }) };
+      const lint = lintSkill(raw, { maxTokens });
+      const trust = parseSkillForTrust(raw, p);
+      appendRun(ctx.cwd, p, {
+        ts: new Date().toISOString(),
+        trust: trust.total,
+        tests_passed: lint.ok ? 1 : 0,
+        tests_total: 1,
+        scanner_version: SCANNER_VERSION,
+      });
+      return { path: p, ...lint, trust_score: trust.total, scanner_version: SCANNER_VERSION, findings: trust.findings };
     },
   },
 
@@ -219,6 +234,202 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
         remote: remoteBody,
       };
     },
-  }
+  },
+
+  {
+    name: "skills.scaffold",
+    description: "Create a new SKILL.md with default scope constraints and draft review state.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        description: { type: "string" },
+        path: { type: "string", description: "Optional output path relative to cwd." },
+        noScope: { type: "boolean", description: "Omit default scope-constraint block." },
+      },
+      required: ["name", "description"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const parsed = z
+        .object({
+          name: z.string().min(1),
+          description: z.string().min(1),
+          path: z.string().optional(),
+          noScope: z.boolean().optional(),
+        })
+        .parse(args);
+      const rel = writeScaffoldedSkill(ctx.cwd, {
+        name: parsed.name,
+        description: parsed.description,
+        cwd: ctx.cwd,
+        includeScope: !parsed.noScope,
+      }, parsed.path);
+      return { path: rel, created: true };
+    },
+  },
+
+  {
+    name: "skills.trust",
+    description: "Score a local skill with deterministic trust heuristics (scanner h5).",
+    inputSchema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const { path: p } = z.object({ path: z.string().min(1) }).parse(args);
+      const abs = inside(ctx.cwd, p);
+      const raw = fs.readFileSync(abs, "utf8");
+      const trust = parseSkillForTrust(raw, p);
+      const parts = readSkillParts(raw);
+      appendRun(ctx.cwd, p, {
+        ts: new Date().toISOString(),
+        trust: trust.total,
+        tests_passed: 0,
+        tests_total: 0,
+        scanner_version: SCANNER_VERSION,
+      });
+      return {
+        path: p,
+        trust_score: trust.total,
+        review_state: parts.review_state,
+        confidence: summarizeConfidence(readRuns(ctx.cwd, p)),
+        clarity: trust.clarity,
+        safety: trust.safety,
+        fit: trust.fit,
+        total: trust.total,
+        findings: trust.findings,
+        scanner_version: trust.scanner_version,
+      };
+    },
+  },
+
+  {
+    name: "skills.reviewStatus",
+    description: "Show review_state, review_meta, trust score, and confidence trend for a skill.",
+    inputSchema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const { path: p } = z.object({ path: z.string().min(1) }).parse(args);
+      const abs = inside(ctx.cwd, p);
+      return buildServedSkillPayload(ctx.cwd, p, fs.readFileSync(abs, "utf8"));
+    },
+  },
+
+  {
+    name: "skills.reviewRequest",
+    description: "Move a skill to pending_review.",
+    inputSchema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const { path: p } = z.object({ path: z.string().min(1) }).parse(args);
+      const abs = inside(ctx.cwd, p);
+      const raw = fs.readFileSync(abs, "utf8");
+      const next = applyReviewToFile(raw, { state: "pending_review" });
+      fs.writeFileSync(abs, next, "utf8");
+      return buildServedSkillPayload(ctx.cwd, p, next);
+    },
+  },
+
+  {
+    name: "skills.reviewApprove",
+    description: "Approve a skill; stores approved body hash and trust score at approval time.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        reviewed_by: { type: "string" },
+        notes: { type: "string" },
+      },
+      required: ["path"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const parsed = z
+        .object({
+          path: z.string().min(1),
+          reviewed_by: z.string().optional(),
+          notes: z.string().optional(),
+        })
+        .parse(args);
+      const abs = inside(ctx.cwd, parsed.path);
+      const raw = fs.readFileSync(abs, "utf8");
+      const parts = readSkillParts(raw);
+      const trust = parseSkillForTrust(raw, parsed.path);
+      const next = applyReviewToFile(raw, {
+        state: "approved",
+        reviewed_by: parsed.reviewed_by ?? process.env.USER ?? "local",
+        reviewed_at: new Date().toISOString(),
+        approved_hash: hashBody(parts.body),
+        approved_trust: trust.total,
+        scanner_version: SCANNER_VERSION,
+        notes: parsed.notes,
+      });
+      fs.writeFileSync(abs, next, "utf8");
+      return buildServedSkillPayload(ctx.cwd, parsed.path, next);
+    },
+  },
+
+  {
+    name: "skills.reviewReject",
+    description: "Reject a skill with optional reviewer notes.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        reviewed_by: { type: "string" },
+        notes: { type: "string" },
+      },
+      required: ["path"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const parsed = z
+        .object({
+          path: z.string().min(1),
+          reviewed_by: z.string().optional(),
+          notes: z.string().optional(),
+        })
+        .parse(args);
+      const abs = inside(ctx.cwd, parsed.path);
+      const raw = fs.readFileSync(abs, "utf8");
+      const next = applyReviewToFile(raw, {
+        state: "rejected",
+        reviewed_by: parsed.reviewed_by ?? process.env.USER ?? "local",
+        reviewed_at: new Date().toISOString(),
+        notes: parsed.notes,
+      });
+      fs.writeFileSync(abs, next, "utf8");
+      return buildServedSkillPayload(ctx.cwd, parsed.path, next);
+    },
+  },
+
+  {
+    name: "skills.reviewGate",
+    description: "CI gate: exit semantics via blocked=true when skill is not approved.",
+    inputSchema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const { path: p } = z.object({ path: z.string().min(1) }).parse(args);
+      const abs = inside(ctx.cwd, p);
+      const payload = buildServedSkillPayload(ctx.cwd, p, fs.readFileSync(abs, "utf8"));
+      const blocked = ciBlocksMerge(payload.review_state as any);
+      return { ...payload, blocked, ci_exit_code: blocked ? 1 : 0 };
+    },
+  },
 ];
 }

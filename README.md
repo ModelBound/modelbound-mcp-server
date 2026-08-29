@@ -17,7 +17,10 @@ AI tools come and go. You might use Cursor today, switch to Claude Code tomorrow
 **Local (no API key, no network):**
 - `ide.detectLayout` — find which IDE conventions your repo uses
 - `skills.listLocal`, `skills.readLocal`, `skills.writeLocal`
-- `skills.lint` — front-matter, token count, broken links, TODO scan
+- `skills.lint` — front-matter, token count, broken links, TODO scan, trust score (scanner **h5**)
+- `skills.trust` — deterministic slop/trust heuristics without full lint
+- `skills.scaffold` — create a skill with default scope constraints
+- `skills.reviewStatus`, `skills.reviewRequest`, `skills.reviewApprove`, `skills.reviewReject`, `skills.reviewGate`
 - `skills.validateFormat` — agentskills.io compliance
 - `skills.convert` — translate between IDE formats (e.g. Cursor → Claude)
 - `skills.diff` — compare a local skill with its cloud counterpart
@@ -36,6 +39,8 @@ Orchestrators that juggle multiple AI platforms can call `cloud.resourceTree` on
 The cloud tools are a thin JSON-RPC proxy to `mcp.modelbound.co`. All business logic stays server-side; this repo never touches your data or secrets.
 
 > **Migration from 0.1.x** — old snake_case names (`detect_ide_layout`, `pull_skill`, …) were removed in 0.2.0. The hosted ModelBound MCP server still accepts both forms forever for backward compatibility.
+
+> **Anti-slop (0.4.x)** — trust scanner bumped to **h5** with scope-limit, unbounded-wording, dependency, and refactor findings. `skills.readLocal` now returns `trust_score`, `scanner_version`, `review_state`, and `review_meta`. Override default scope limits via `.modelbound/task-budgets.json`. Use `skills.reviewGate` in CI to block unapproved skills.
 
 ## Install
 
