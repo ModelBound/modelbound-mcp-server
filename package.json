@@ -17,6 +17,7 @@
     "dev": "tsx src/index.ts",
     "test": "find src -name '*.test.ts' -print0 | xargs -0 -r node --test --import tsx",
     "smoke": "npm run build && node scripts/smoke-test.mjs",
+    "test:e2e": "npm run build && node scripts/anti-slop-e2e.mjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
