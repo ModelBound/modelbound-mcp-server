@@ -1,7 +1,7 @@
 {
   "name": "modelbound-mcp",
-  "version": "0.5.0",
-  "description": "Local-first MCP server for agent skills. Validate, lint, diff, convert, optimize tokens, and run the Skill Development Pipeline across Cursor, Claude, Codex, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
+  "version": "0.7.0",
+  "description": "Local-first MCP server for agent skills. Validate, lint, diff, optimize tokens, run the Skill Development Pipeline, test, benchmark, version, and restore skills across Cursor, Claude, Kiro, Windsurf, VS Code, and Amazon Q. Optional cloud sync with ModelBound.",
   "type": "module",
   "bin": {
     "modelbound-mcp": "./dist/cli.js"
@@ -15,29 +15,20 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && chmod +x dist/cli.js dist/index.js",
     "dev": "tsx src/index.ts",
-    "test": "find src -name '*.test.ts' -print0 | xargs -0 -r node --test --import tsx",
-    "smoke": "npm run build && node scripts/smoke-test.mjs",
-    "test:e2e": "npm run build && node scripts/anti-slop-e2e.mjs",
+    "test": "node --test --import tsx ./src/**/*.test.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "modelbound",
     "agent-skills",
-    "context-engineering",
-    "prompt-engineering",
     "token-optimization",
     "skill-pipeline",
     "cursor",
     "claude",
-    "codex",
     "kiro",
     "windsurf",
-    "vscode",
-    "ai-agents",
-    "generative-ai",
-    "llm"
+    "modelbound"
   ],
   "author": "ModelBound",
   "license": "MIT",
@@ -55,11 +46,11 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "gray-matter": "^4.0.3",
-    "zod": "^4.4.3"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^26.0.0",
-    "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
   }
 }
