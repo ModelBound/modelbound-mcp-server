@@ -8,40 +8,29 @@ import {
 import { localTools } from "./tools/local.js";
 import { cloudTools } from "./tools/cloud.js";
 import { optimizationTools } from "./tools/optimization.js";
-import { pipelineTools } from "./tools/pipeline.js";
-import { skillOpsTools } from "./tools/skill-ops.js";
-import { workspaceTools } from "./tools/workspace.js";
-import { evalTools } from "./tools/eval.js";
+import { outcomesTools } from "./tools/outcomes.js";
+import { harnessTools } from "./tools/harness.js";
+import { tracingTools, traceWrap } from "./tools/tracing.js";
 import { CloudClient } from "./proxy.js";
 
 const cwd = process.cwd();
 const cloud = CloudClient.fromEnv();
-type Tool = {
-  name: string;
-  description: string;
-  inputSchema: unknown;
-  handler: (args: any, ctx: { cwd: string }) => Promise<unknown>;
-};
-
-// Cloud-backed tool groups all share the same single-arg handler shape; wrap
-// them so the registry can pass ctx uniformly without each group caring.
+type Tool = { name: string; description: string; inputSchema: unknown; handler: (args: any, ctx: { cwd: string }) => Promise<unknown> };
 const wrapCloud = <T extends { handler: (args: any) => Promise<unknown> }>(t: T) => ({
   ...t,
   handler: async (args: any, _ctx: { cwd: string }) => t.handler(args),
 });
-
 const tools: Tool[] = [
   ...localTools(cloud),
   ...cloudTools(cloud).map(wrapCloud),
   ...optimizationTools(cloud).map(wrapCloud),
-  ...workspaceTools(cloud).map(wrapCloud),
-  ...pipelineTools(cloud).map(wrapCloud),
-  ...skillOpsTools(cloud).map(wrapCloud),
-  ...evalTools(cloud).map(wrapCloud),
+  ...outcomesTools(cloud).map(wrapCloud),
+  ...harnessTools(cloud).map(wrapCloud),
+  ...tracingTools(),
 ];
 
 const server = new Server(
-  { name: "modelbound-mcp", version: "0.4.2" },
+  { name: "modelbound-mcp", version: "0.7.0" },
   { capabilities: { tools: {} } },
 );
 
