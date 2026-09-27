@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2 — 2026-09-27
+
+- `report_run` steps accept `span_id`, `parent_span_id`, and `started_at` so multi-agent runs keep their tree and parallel timing.
+
 ## 0.7.1 — 2026-09-27
 
 ### Fixed
