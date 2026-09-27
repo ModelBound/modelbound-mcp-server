@@ -5,32 +5,15 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { localTools } from "./tools/local.js";
-import { cloudTools } from "./tools/cloud.js";
-import { optimizationTools } from "./tools/optimization.js";
-import { outcomesTools } from "./tools/outcomes.js";
-import { harnessTools } from "./tools/harness.js";
-import { tracingTools, traceWrap } from "./tools/tracing.js";
 import { CloudClient } from "./proxy.js";
+import { allMcpTools } from "./toolRegistry.js";
 
 const cwd = process.cwd();
 const cloud = CloudClient.fromEnv();
-type Tool = { name: string; description: string; inputSchema: unknown; handler: (args: any, ctx: { cwd: string }) => Promise<unknown> };
-const wrapCloud = <T extends { handler: (args: any) => Promise<unknown> }>(t: T) => ({
-  ...t,
-  handler: async (args: any, _ctx: { cwd: string }) => t.handler(args),
-});
-const tools: Tool[] = [
-  ...localTools(cloud),
-  ...cloudTools(cloud).map(wrapCloud),
-  ...optimizationTools(cloud).map(wrapCloud),
-  ...outcomesTools(cloud).map(wrapCloud),
-  ...harnessTools(cloud).map(wrapCloud),
-  ...tracingTools(),
-];
+const tools = allMcpTools(cloud);
 
 const server = new Server(
-  { name: "modelbound-mcp", version: "0.7.0" },
+  { name: "modelbound-mcp", version: "0.7.1" },
   { capabilities: { tools: {} } },
 );
 
