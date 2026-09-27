@@ -13,7 +13,7 @@ const cloud = CloudClient.fromEnv();
 const tools = allMcpTools(cloud);
 
 const server = new Server(
-  { name: "modelbound-mcp", version: "0.7.1" },
+  { name: "modelbound-mcp", version: "0.7.2" },
   { capabilities: { tools: {} } },
 );
 

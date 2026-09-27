@@ -19,6 +19,9 @@ type Step = {
   skill_id?: string;
   skill_slug?: string;
   skill_version?: string;
+  span_id?: string;
+  parent_span_id?: string;
+  started_at?: string;
 };
 
 async function send(payload: unknown): Promise<{ ok: boolean; status: number; body: unknown }> {
@@ -61,6 +64,9 @@ export function tracingTools() {
                 error_category: { type: "string" },
                 skill_id: { type: "string" },
                 skill_version: { type: "string" },
+                span_id: { type: "string", description: "Your id for this step, so child steps can point to it (multi-agent runs)." },
+                parent_span_id: { type: "string", description: "span_id of the step/agent this step belongs to." },
+                started_at: { type: "string", description: "ISO start time; lets parallel steps be timed correctly." },
               },
               required: ["name"],
             },
