@@ -85,6 +85,16 @@ modelbound-mcp validate ./SKILL.md                     # agentskills.io complian
 modelbound-mcp convert --from cursor --to claude ./rule.mdc > out.md
 ```
 
+## Tests
+
+```bash
+npm test              # unit tests (registry parity, trust, review, harness)
+npm run smoke         # local MCP tools + CLI subcommands (+ cloud if MODELBOUND_API_KEY set)
+npm run test:e2e      # offline anti-slop / review lifecycle
+```
+
+CLI vs MCP tool mapping: [docs/PARITY.md](docs/PARITY.md).
+
 ## Contributing
 
 We want help. Specifically:

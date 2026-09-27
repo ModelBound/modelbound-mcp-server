@@ -52,35 +52,15 @@ async function loadTools(cwd, apiKey) {
   if (apiKey) process.env.MODELBOUND_API_KEY = apiKey;
   else delete process.env.MODELBOUND_API_KEY;
 
-  const { localTools } = await import(path.join(dist, "tools/local.js"));
-  const { cloudTools } = await import(path.join(dist, "tools/cloud.js"));
-  const { optimizationTools } = await import(path.join(dist, "tools/optimization.js"));
-  const { pipelineTools } = await import(path.join(dist, "tools/pipeline.js"));
-  const { skillOpsTools } = await import(path.join(dist, "tools/skill-ops.js"));
-  const { workspaceTools } = await import(path.join(dist, "tools/workspace.js"));
-  const { evalTools } = await import(path.join(dist, "tools/eval.js"));
+  const { allMcpTools } = await import(path.join(dist, "toolRegistry.js"));
   const { CloudClient } = await import(path.join(dist, "proxy.js"));
 
   const cloud = CloudClient.fromEnv();
-  const toolsNoCloud = [...localTools(null)];
-  const wrapCloud = (t) => ({
-    ...t,
-    handler: async (args, _ctx) => t.handler(args),
-  });
-
   const bundle = {
     cwd,
     cloud,
-    toolsNoCloud,
-    tools: [
-      ...localTools(cloud),
-      ...cloudTools(cloud).map(wrapCloud),
-      ...optimizationTools(cloud).map(wrapCloud),
-      ...workspaceTools(cloud).map(wrapCloud),
-      ...pipelineTools(cloud).map(wrapCloud),
-      ...skillOpsTools(cloud).map(wrapCloud),
-      ...evalTools(cloud).map(wrapCloud),
-    ],
+    toolsNoCloud: allMcpTools(null),
+    tools: allMcpTools(cloud),
   };
 
   if (savedKey === undefined) delete process.env.MODELBOUND_API_KEY;
@@ -165,6 +145,37 @@ async function testLocalTools(fixtureDir, tools, ctx, toolsNoCloud) {
     } catch (e) {
       fail(name, e);
     }
+  }
+}
+
+async function testParityTools(tools, ctx) {
+  console.log("\nHarness / outcomes / tracing (local)");
+
+  const mustExist = ["check_harness", "skill.report_outcome", "skill.reliability", "report_run"];
+  for (const name of mustExist) {
+    if (!tools.find((t) => t.name === name)) {
+      fail(`registry includes ${name}`, "tool missing from allMcpTools()");
+      return;
+    }
+    ok(`registry includes ${name}`);
+  }
+
+  try {
+    const run = await runTool(tools, "report_run", { steps: [{ name: "smoke-step", status: "ok" }] }, ctx);
+    if (run.recorded !== false && !process.env.MODELBOUND_API_KEY) {
+      throw new Error("expected recorded:false without API key");
+    }
+    ok("report_run (no api key)");
+  } catch (e) {
+    fail("report_run (no api key)", e);
+  }
+
+  try {
+    await runTool(tools, "check_harness", { skill_id: "demo" }, ctx);
+    fail("check_harness requires API key", "expected throw");
+  } catch (e) {
+    if (!String(e.message || e).includes("MODELBOUND_API_KEY")) throw e;
+    ok("check_harness requires API key");
   }
 }
 
@@ -291,6 +302,7 @@ async function main() {
     const ctx = { cwd: fixtureDir };
 
     await testLocalTools(fixtureDir, tools, ctx, toolsNoCloud);
+    await testParityTools(toolsNoCloud, ctx);
     testCli(fixtureDir);
     await testCloudTools(tools, ctx, cloud);
   } finally {

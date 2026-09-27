@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.1 — 2026-09-27
+
+### Fixed
+- Restore **pipeline**, **skill ops**, **workspace**, and **eval** tools in the stdio server registry (regression in 0.7.0).
+- Centralize registration in `toolRegistry.ts`; apply optional `traceWrap` on cloud-backed tools.
+
+### Added
+- Registry parity tests vs **modelbound-cli** surface; harness unit tests; smoke checks for `check_harness`, outcomes, and `report_run`.
+- CI runs `test:e2e` (anti-slop); `docs/PARITY.md`.
+
 ## 0.7.0
 
 ### Added
