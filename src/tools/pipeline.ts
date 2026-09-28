@@ -94,7 +94,15 @@ export function pipelineTools(client: CloudClient | null) {
         required: ["skill_id"],
       },
       handler: async (args: Record<string, unknown>) =>
-        requireCloud(client).callTool("set_skill_pipeline_config", args),
+        {
+        // The cloud tool reads config keys at the top level; flatten `config`
+        // so updates are actually applied instead of silently ignored.
+        const { config, ...rest } = args as { config?: Record<string, unknown> };
+        return requireCloud(client).callTool("set_skill_pipeline_config", {
+          ...(config && typeof config === "object" ? config : {}),
+          ...rest,
+        });
+      },
     },
   ];
 }
