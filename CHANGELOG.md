@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3 — 2026-10-11
+
+- `report_run` steps accept `kind: "decision"` (and `agent`) with `decision` label and `confidence`, for decision skills tested on fast engines like TypeSafe Jev. Labels only, never inputs.
+
 ## 0.7.2 — 2026-09-27
 
 - `report_run` steps accept `span_id`, `parent_span_id`, and `started_at` so multi-agent runs keep their tree and parallel timing.

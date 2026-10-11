@@ -10,7 +10,9 @@ const MAX_STEPS = 200;
 
 type Step = {
   name: string;
-  kind?: "model" | "tool" | "retrieval" | "other";
+  kind?: "model" | "tool" | "retrieval" | "agent" | "decision" | "other";
+  decision?: string;
+  confidence?: number;
   duration_ms?: number;
   input_tokens?: number;
   output_tokens?: number;
@@ -56,7 +58,9 @@ export function tracingTools() {
               type: "object",
               properties: {
                 name: { type: "string" },
-                kind: { type: "string", enum: ["model", "tool", "retrieval", "other"] },
+                kind: { type: "string", enum: ["model", "tool", "retrieval", "agent", "decision", "other"] },
+                decision: { type: "string", description: "Decision steps: the label chosen (e.g. escalate). Labels only, never inputs." },
+                confidence: { type: "number", description: "Decision steps: confidence 0-1." },
                 duration_ms: { type: "number" },
                 input_tokens: { type: "number" },
                 output_tokens: { type: "number" },
