@@ -17,8 +17,8 @@ AI tools come and go. You might use Cursor today, switch to Claude Code tomorrow
 **Local (no API key, no network):**
 - `ide.detectLayout` — find which IDE conventions your repo uses
 - `skills.listLocal`, `skills.readLocal`, `skills.writeLocal`
-- `skills.lint` — front-matter, token count, broken links, TODO scan, trust score (scanner **h5**)
-- `skills.trust` — deterministic slop/trust heuristics without full lint
+- `skills.lint` — front-matter, token count, broken links, TODO scan, pass / warn / fail checks (scanner **h5**)
+- `skills.checks` — deterministic safety/quality checks without full lint (no numeric score)
 - `skills.scaffold` — create a skill with default scope constraints
 - `skills.reviewStatus`, `skills.reviewRequest`, `skills.reviewApprove`, `skills.reviewReject`, `skills.reviewGate`
 - `skills.validateFormat` — agentskills.io compliance
@@ -40,7 +40,7 @@ The cloud tools are a thin JSON-RPC proxy to `mcp.modelbound.co`. All business l
 
 > **Migration from 0.1.x** — old snake_case names (`detect_ide_layout`, `pull_skill`, …) were removed in 0.2.0. The hosted ModelBound MCP server still accepts both forms forever for backward compatibility.
 
-> **Anti-slop (0.4.x)** — trust scanner bumped to **h5** with scope-limit, unbounded-wording, dependency, and refactor findings. `skills.readLocal` now returns `trust_score`, `scanner_version`, `review_state`, and `review_meta`. Override default scope limits via `.modelbound/task-budgets.json`. Use `skills.reviewGate` in CI to block unapproved skills.
+> **Anti-slop (0.4.x)** — trust scanner bumped to **h5** with scope-limit, unbounded-wording, dependency, and refactor findings. `skills.readLocal` now returns `checks`, `scanner_version`, `review_state`, and `review_meta`. Override default scope limits via `.modelbound/task-budgets.json`. Use `skills.reviewGate` in CI to block unapproved skills.
 
 ## Install
 
@@ -88,7 +88,7 @@ modelbound-mcp convert --from cursor --to claude ./rule.mdc > out.md
 ## Tests
 
 ```bash
-npm test              # unit tests (registry parity, trust, review, harness)
+npm test              # unit tests (registry parity, checks, review, harness)
 npm run smoke         # local MCP tools + CLI subcommands (+ cloud if MODELBOUND_API_KEY set)
 npm run test:e2e      # offline anti-slop / review lifecycle
 ```
@@ -111,7 +111,7 @@ Browse [good first issues](https://github.com/ModelBound/modelbound-mcp-server/i
 | --- | --- |
 | [ModelBound CLI](https://github.com/ModelBound/modelbound-cli) · [npm](https://www.npmjs.com/package/modelbound) | Terminal + CI for token optimization, skill pipeline, and version management |
 | [Cursor Extension](https://github.com/ModelBound/modelbound-cursor-extension) · [Marketplace](https://marketplace.visualstudio.com/items?itemName=ModelBound.modelbound-cursor-extension) | VS Code/Cursor extension for rules sync and MCP bridge |
-| [Cursor Plugin](https://github.com/ModelBound/cursor-plugin) | Cursor slash commands for pipeline, trust & safety, and versions |
+| [Cursor Plugin](https://github.com/ModelBound/cursor-plugin) | Cursor slash commands for pipeline, safety checks, and versions |
 | [Claude Code Plugin](https://github.com/ModelBound/modelbound-claude-code-plugin) | Claude Code plugin for pipeline, hooks, and skill sync |
 | [Dev Packs](https://github.com/ModelBound/dev-packs) | Open-source curated AI context packs for engineering teams |
 

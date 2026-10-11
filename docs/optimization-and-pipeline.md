@@ -18,7 +18,7 @@ All tools below require `MODELBOUND_API_KEY` because they touch your cloud libra
 | --- | --- |
 | `pipeline.run` | Run **Test → Optimize → Production** on a skill. Inputs: `targets` (e.g. `["marketplace","claude"]`), `version_bump`, `override_gates`, `apply_optimization`, `changelog`. Returns `{run_id, status, version_after}`. |
 | `pipeline.status` | Poll a `run_id` for stage_results JSON (edit / test / production with status, summary, and detail blocks). |
-| `pipeline.config` | Read or update a skill's `pipeline_config` (`min_trust`, `max_latency_ms`, enforce flags, default targets). |
+| `pipeline.config` | Read or update a skill's `pipeline_config` (`max_latency_ms`, enforce flags, default targets). |
 
 ## Skill ops & history
 

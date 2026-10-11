@@ -1,5 +1,14 @@
 # Changelog
 
+
+## 0.8.0 — 2026-10-11
+
+### Breaking
+- Removed the numeric 0–100 trust score. `skills.trust` is now `skills.checks` and returns `checks: { status: "pass" | "warn" | "fail", critical, warnings, info }` plus findings.
+- `skills.lint` and `skills.readLocal` return `checks` instead of `trust_score`; served payloads return `findings` instead of `trust`.
+- Review approval stores `approved_checks` instead of `approved_trust`. Local confidence history tracks open-issue counts (`latest_issues`, `issues_delta`).
+- `pipeline.config` no longer documents `min_trust` / `enforce_trust`; publishing is blocked by failing tests, blocking findings, or latency only.
+
 ## 0.7.3 — 2026-10-11
 
 - `report_run` steps accept `kind: "decision"` (and `agent`) with `decision` label and `confidence`, for decision skills tested on fast engines like TypeSafe Jev. Labels only, never inputs.

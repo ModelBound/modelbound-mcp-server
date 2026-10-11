@@ -29,7 +29,7 @@ describe("review state machine", () => {
     const approved = applyReviewToFile(BASE, {
       state: "approved",
       approved_hash: hashBody(readSkillParts(BASE).body),
-      approved_trust: 90,
+      approved_checks: "pass",
     });
     const edited = approved.replace("Body v1.", "Body v2.");
     const state = effectiveReviewState(readSkillParts(edited).body, readSkillParts(edited).review);

@@ -5,7 +5,7 @@
  * agents can run the full Test → Optimize → Production pipeline on a skill
  * and poll progress without leaving their IDE.
  *
- * The hosted server enforces all gates (trust score, latency, saved test
+ * The hosted server enforces all gates (readiness checks, latency, saved test
  * cases) and creates file_versions snapshots before any production write.
  * `override_gates=true` is forwarded as-is — callers are responsible for
  * surfacing that override clearly in their UI.
@@ -44,7 +44,7 @@ export function pipelineTools(client: CloudClient | null) {
           override_gates: {
             type: "boolean",
             default: false,
-            description: "Bypass trust/latency/test gates. Surface this prominently in any UI.",
+            description: "Bypass readiness/latency/test gates. Surface this prominently in any UI.",
           },
           apply_optimization: {
             type: "boolean",
@@ -81,7 +81,7 @@ export function pipelineTools(client: CloudClient | null) {
     {
       name: "pipeline.config",
       description:
-        "Read or update a skill's pipeline_config (min_trust, max_latency_ms, enforce_* flags, default targets). Pass `config` to update; omit to read.",
+        "Read or update a skill's pipeline_config (max_latency_ms, enforce_latency/enforce_tests flags, default targets). Pass `config` to update; omit to read.",
       inputSchema: {
         type: "object",
         properties: {

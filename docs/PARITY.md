@@ -9,7 +9,7 @@ Package **[modelbound](https://www.npmjs.com/package/modelbound)** CLI **0.3.6**
 | `mb detect` | `ide.detectLayout` |
 | `mb ls` | `skills.listLocal` |
 | `mb lint` / `validate` | `skills.lint`, `skills.validateFormat` |
-| `mb init` / `new` / `trust` | `skills.scaffold`, `skills.trust`, task budgets via local files |
+| `mb init` / `new` / `checks` | `skills.scaffold`, `skills.checks`, task budgets via local files |
 | `mb review *` | `skills.reviewRequest`, `reviewApprove`, `reviewReject`, `reviewStatus`, `reviewGate` |
 | `mb push` / `pull` / `sync` | `cloud.pushSkill`, `cloud.pullSkill`, `sync.fromIde`, `workspace.setContext` |
 | `mb optimize` | `optimization.run`, `optimization.dryRun`, `optimization.preview` |

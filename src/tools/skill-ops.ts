@@ -114,7 +114,7 @@ export function skillOpsTools(client: CloudClient | null) {
     {
       name: "skill.findings",
       description:
-        "List Trust & Safety findings and scores for a skill. Returns scores, findings with stable keys, and ignored_keys. Requires MODELBOUND_API_KEY.",
+        "List safety and quality findings for a skill. Returns findings with stable keys, and ignored_keys. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
         properties: { skill_id: { type: "string" } },
@@ -125,7 +125,7 @@ export function skillOpsTools(client: CloudClient | null) {
     },
     {
       name: "skill.ignoreFinding",
-      description: "Ignore a trust finding by stable key (or class/severity/message). Requires MODELBOUND_API_KEY.",
+      description: "Ignore a finding by stable key (or class/severity/message). Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
         properties: {
@@ -142,7 +142,7 @@ export function skillOpsTools(client: CloudClient | null) {
     },
     {
       name: "skill.unignoreFinding",
-      description: "Un-ignore a previously ignored trust finding. Requires MODELBOUND_API_KEY.",
+      description: "Un-ignore a previously ignored finding. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
         properties: {
@@ -194,7 +194,7 @@ export function skillOpsTools(client: CloudClient | null) {
     },
     {
       name: "skill.suggestImprovements",
-      description: "Suggest skill improvements from trust & quality analysis. Requires MODELBOUND_API_KEY.",
+      description: "Suggest skill improvements from findings, tests and real-world outcomes. Requires MODELBOUND_API_KEY.",
       inputSchema: {
         type: "object",
         properties: { skill_id: { type: "string" } },
