@@ -339,7 +339,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
 
   {
     name: "skills.reviewApprove",
-    description: "Approve a skill; stores approved body hash and trust score at approval time.",
+    description: "Approve a skill; stores the approved body hash and checks status (pass, warn or fail) at approval time.",
     inputSchema: {
       type: "object",
       properties: {
