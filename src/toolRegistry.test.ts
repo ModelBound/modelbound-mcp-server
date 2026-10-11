@@ -19,7 +19,7 @@ const CLI_PARITY_TOOLS = [
   "eval.listCases",
   "skills.scaffold",
   "skills.lint",
-  "skills.trust",
+  "skills.checks",
   "skills.reviewGate",
   "ide.detectLayout",
 ];

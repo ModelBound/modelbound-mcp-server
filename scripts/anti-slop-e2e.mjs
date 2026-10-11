@@ -62,14 +62,15 @@ async function main() {
     ok("skills.scaffold injects scope block");
 
     // Trust h5
-    const trust = await runTool(tools, "skills.trust", { path: skillRel }, ctx);
+    const trust = await runTool(tools, "skills.checks", { path: skillRel }, ctx);
     if (trust.scanner_version !== "h5") throw new Error(`expected h5, got ${trust.scanner_version}`);
-    if (typeof trust.trust_score !== "number") throw new Error("missing trust_score");
-    ok("skills.trust returns h5 score");
+    if (!["pass", "warn", "fail"].includes(trust.checks?.status)) throw new Error("missing checks status");
+    if ("trust_score" in trust) throw new Error("numeric score must not be exposed");
+    ok("skills.checks returns h5 status");
 
     // Served payload on read
     const read = await runTool(tools, "skills.readLocal", { path: skillRel }, ctx);
-    for (const field of ["trust_score", "scanner_version", "review_state", "review_meta"]) {
+    for (const field of ["checks", "scanner_version", "review_state", "review_meta"]) {
       if (read[field] === undefined && field !== "review_meta") {
         throw new Error(`readLocal missing ${field}`);
       }
@@ -92,8 +93,8 @@ async function main() {
     );
     status = await runTool(tools, "skills.reviewStatus", { path: skillRel }, ctx);
     if (status.review_state !== "approved") throw new Error("approve failed");
-    if (status.review_meta?.approved_trust == null) throw new Error("missing approved_trust");
-    ok("skills.reviewApprove stores hash and trust");
+    if (status.review_meta?.approved_checks == null) throw new Error("missing approved_checks");
+    ok("skills.reviewApprove stores hash and check status");
 
     let gate = await runTool(tools, "skills.reviewGate", { path: skillRel }, ctx);
     if (gate.blocked || gate.ci_exit_code !== 0) throw new Error("gate should pass when approved");

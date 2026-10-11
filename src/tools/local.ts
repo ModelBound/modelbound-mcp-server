@@ -7,7 +7,7 @@ import { CloudClient } from "../proxy.js";
 import { buildServedSkillPayload, parseSkillForTrust } from "../lib/skillPayload.js";
 import { applyReviewToFile, ciBlocksMerge, hashBody, readSkillParts } from "../lib/skillReview.js";
 import { appendRun, readRuns, summarizeConfidence } from "../lib/confidenceHistory.js";
-import { SCANNER_VERSION } from "../lib/skillTrust.js";
+import { SCANNER_VERSION, checksOf } from "../lib/skillTrust.js";
 import { writeScaffoldedSkill } from "../lib/skillScaffold.js";
 
 const inside = (cwd: string, p: string) => {
@@ -122,12 +122,12 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
       const trust = parseSkillForTrust(raw, p);
       appendRun(ctx.cwd, p, {
         ts: new Date().toISOString(),
-        trust: trust.total,
+        issues: checksOf(trust).critical + checksOf(trust).warnings,
         tests_passed: lint.ok ? 1 : 0,
         tests_total: 1,
         scanner_version: SCANNER_VERSION,
       });
-      return { path: p, ...lint, trust_score: trust.total, scanner_version: SCANNER_VERSION, findings: trust.findings };
+      return { path: p, ...lint, checks: checksOf(trust), scanner_version: SCANNER_VERSION, findings: trust.findings };
     },
   },
 
@@ -270,8 +270,8 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
   },
 
   {
-    name: "skills.trust",
-    description: "Score a local skill with deterministic trust heuristics (scanner h5).",
+    name: "skills.checks",
+    description: "Check a local skill with deterministic heuristics (scanner h5). Returns pass / warn / fail with findings — no numeric score.",
     inputSchema: {
       type: "object",
       properties: { path: { type: "string" } },
@@ -286,20 +286,16 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
       const parts = readSkillParts(raw);
       appendRun(ctx.cwd, p, {
         ts: new Date().toISOString(),
-        trust: trust.total,
+        issues: checksOf(trust).critical + checksOf(trust).warnings,
         tests_passed: 0,
         tests_total: 0,
         scanner_version: SCANNER_VERSION,
       });
       return {
         path: p,
-        trust_score: trust.total,
+        checks: checksOf(trust),
         review_state: parts.review_state,
         confidence: summarizeConfidence(readRuns(ctx.cwd, p)),
-        clarity: trust.clarity,
-        safety: trust.safety,
-        fit: trust.fit,
-        total: trust.total,
         findings: trust.findings,
         scanner_version: trust.scanner_version,
       };
@@ -308,7 +304,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
 
   {
     name: "skills.reviewStatus",
-    description: "Show review_state, review_meta, trust score, and confidence trend for a skill.",
+    description: "Show review_state, review_meta, check status, and confidence trend for a skill.",
     inputSchema: {
       type: "object",
       properties: { path: { type: "string" } },
@@ -371,7 +367,7 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
         reviewed_by: parsed.reviewed_by ?? process.env.USER ?? "local",
         reviewed_at: new Date().toISOString(),
         approved_hash: hashBody(parts.body),
-        approved_trust: trust.total,
+        approved_checks: checksOf(trust).status,
         scanner_version: SCANNER_VERSION,
         notes: parsed.notes,
       });

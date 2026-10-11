@@ -103,7 +103,7 @@ async function testLocalTools(fixtureDir, tools, ctx, toolsNoCloud) {
     ],
     ["skills.readLocal", () => runTool(tools, "skills.readLocal", { path: relPath }, ctx)],
     ["skills.lint", () => runTool(tools, "skills.lint", { path: relPath }, ctx)],
-    ["skills.trust", () => runTool(tools, "skills.trust", { path: relPath }, ctx)],
+    ["skills.checks", () => runTool(tools, "skills.checks", { path: relPath }, ctx)],
     ["skills.scaffold", () =>
       runTool(tools, "skills.scaffold", {
         name: "scaffold-smoke",
@@ -132,13 +132,16 @@ async function testLocalTools(fixtureDir, tools, ctx, toolsNoCloud) {
         throw new Error("expected local_only without API key");
       }
       if (name === "skills.readLocal") {
-        if (result.trust_score == null || result.scanner_version !== "h5") {
+        if (result.checks == null || result.scanner_version !== "h5") {
           throw new Error("skills.readLocal missing served payload fields");
         }
       }
-      if (name === "skills.trust") {
-        if (result.scanner_version !== "h5" || typeof result.trust_score !== "number") {
-          throw new Error("skills.trust missing h5 score");
+      if (name === "skills.checks") {
+        if (result.scanner_version !== "h5" || !["pass", "warn", "fail"].includes(result.checks?.status)) {
+          throw new Error("skills.checks missing h5 status");
+        }
+        if ("trust_score" in result || "total" in result) {
+          throw new Error("skills.checks must not expose a numeric score");
         }
       }
       ok(name);
