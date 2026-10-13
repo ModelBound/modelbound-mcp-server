@@ -9,6 +9,7 @@ import { applyReviewToFile, ciBlocksMerge, hashBody, readSkillParts } from "../l
 import { appendRun, readRuns, summarizeConfidence } from "../lib/confidenceHistory.js";
 import { SCANNER_VERSION, checksOf } from "../lib/skillTrust.js";
 import { writeScaffoldedSkill } from "../lib/skillScaffold.js";
+import { staticScan } from "../lib/flightCheck.js";
 
 const inside = (cwd: string, p: string) => {
   const abs = path.resolve(cwd, p);
@@ -266,6 +267,29 @@ export function localTools(cloud: CloudClient | null = CloudClient.fromEnv()) {
         includeScope: !parsed.noScope,
       }, parsed.path);
       return { path: rel, created: true };
+    },
+  },
+
+  {
+    name: "skills.flightCheck",
+    description:
+      "Flight Check: offline safety scan for a skill or prompt (prompt injection, exfiltration, secrets, destructive commands, wildcard tools, loop hazards, clarity, token budget). Pass a file path or raw content. Local-only, zero AI cost. Blocking findings should be fixed before shipping.",
+    inputSchema: {
+      type: "object",
+      properties: { path: { type: "string" }, content: { type: "string" } },
+      additionalProperties: false,
+    },
+    handler: async (args: unknown, ctx: { cwd: string }) => {
+      const a = z.object({ path: z.string().min(1).optional(), content: z.string().optional() }).parse(args);
+      if (!a.path && !a.content) throw new Error("Provide path or content");
+      const raw = a.content ?? fs.readFileSync(inside(ctx.cwd, a.path!), "utf8");
+      const r = staticScan(raw);
+      return {
+        path: a.path ?? null,
+        status: r.blocking ? "fail" : r.warnings ? "warn" : "pass",
+        ...r,
+        skill_lift_url: "https://modelbound.co/flight-check",
+      };
     },
   },
 
