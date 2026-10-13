@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 — 2026-10-13
+
+### Added
+- `skills.flightCheck`: offline Flight Check safety scan for a file path or raw content. Same rule ids as the CLI `mb check` and the ModelBound web app. Zero AI cost.
+
 
 ## 0.8.0 — 2026-10-11
 
