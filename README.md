@@ -4,7 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/modelbound-mcp.svg)](https://www.npmjs.com/package/modelbound-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![ModelBound Skill Trust](https://modelbound.co/api/badge/skills.svg?repo=ModelBound/modelbound-mcp-server)](https://modelbound.co/connect/github-actions?repo=ModelBound/modelbound-mcp-server)
+[![ModelBound Skill Checks](https://modelbound.co/api/badge/skills.svg?repo=ModelBound/modelbound-mcp-server)](https://modelbound.co/connect/github-actions?repo=ModelBound/modelbound-mcp-server)
 
 ## Why ModelBound?
 
@@ -18,6 +18,7 @@ AI tools come and go. You might use Cursor today, switch to Claude Code tomorrow
 - `ide.detectLayout` — find which IDE conventions your repo uses
 - `skills.listLocal`, `skills.readLocal`, `skills.writeLocal`
 - `skills.lint` — front-matter, token count, broken links, TODO scan, pass / warn / fail checks (scanner **h5**)
+- `skills.flightCheck` — Flight Check offline safety scan (injection, exfiltration, secrets, destructive commands, wildcard tools, loop hazards); same rules as `npx modelbound check`
 - `skills.checks` — deterministic safety/quality checks without full lint (no numeric score)
 - `skills.scaffold` — create a skill with default scope constraints
 - `skills.reviewStatus`, `skills.reviewRequest`, `skills.reviewApprove`, `skills.reviewReject`, `skills.reviewGate`
